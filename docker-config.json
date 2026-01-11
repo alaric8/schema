@@ -68,6 +68,12 @@
                             "registrytoken"
                         ],
                         "additionalProperties": false
+                    },
+                    {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": false,
+                        "description": "Empty auth entry (used by Docker Desktop as placeholder)"
                     }
                 ]
             },
