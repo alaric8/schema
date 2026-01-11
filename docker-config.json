@@ -13,6 +13,12 @@
                 "oneOf": [
                     {
                         "type": "object",
+                        "properties": {},
+                        "additionalProperties": false,
+                        "description": "Empty auth entry (used by Docker Desktop as placeholder)"
+                    },
+                    {
+                        "type": "object",
                         "properties": {
                             "auth": {
                                 "type": "string",
@@ -30,11 +36,11 @@
                         "properties": {
                             "username": {
                                 "type": "string",
-                                "description": "Username"
+                                "description": "用户名"
                             },
                             "password": {
                                 "type": "string",
-                                "description": "Password"
+                                "description": "密码"
                             }
                         },
                         "required": [
@@ -68,12 +74,6 @@
                             "registrytoken"
                         ],
                         "additionalProperties": false
-                    },
-                    {
-                        "type": "object",
-                        "properties": {},
-                        "additionalProperties": false,
-                        "description": "Empty auth entry (used by Docker Desktop as placeholder)"
                     }
                 ]
             },
