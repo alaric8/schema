@@ -1,0 +1,598 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Docker Daemon 配置",
+    "description": "Docker 守护进程配置文件 schema",
+    "type": "object",
+    "properties": {
+        "allow-direct-routing": {
+            "type": "boolean",
+            "description": "允许远程访问容器IP地址上发布的端口",
+            "default": false
+        },
+        "authorization-plugins": {
+            "type": "array",
+            "description": "要加载的授权插件列表",
+            "items": {
+                "type": "string"
+            },
+            "default": []
+        },
+        "bip": {
+            "type": "string",
+            "description": "默认网桥的IPv4地址",
+            "pattern": "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\/([0-9]|[1-2][0-9]|3[0-2]))?$"
+        },
+        "bip6": {
+            "type": "string",
+            "description": "默认网桥的IPv6地址"
+        },
+        "bridge": {
+            "type": "string",
+            "description": "将容器附加到的网络桥接"
+        },
+        "bridge-accept-fwmark": {
+            "type": "string",
+            "description": "在桥接网络中，接受具有此防火墙标记/掩码的数据包"
+        },
+        "builder": {
+            "type": "object",
+            "description": "构建器配置",
+            "properties": {
+                "gc": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "default": true
+                        },
+                        "defaultReservedSpace": {
+                            "type": "string",
+                            "pattern": "^[0-9]+(\\.[0-9]+)?[KMGTP]?B$"
+                        },
+                        "policy": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "maxUsedSpace": {
+                                        "type": "string",
+                                        "pattern": "^[0-9]+(\\.[0-9]+)?[KMGTP]?B$"
+                                    },
+                                    "keepDuration": {
+                                        "type": "string",
+                                        "pattern": "^[0-9]+[hms]$"
+                                    },
+                                    "filter": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "reservedSpace": {
+                                        "type": "string",
+                                        "pattern": "^[0-9]+(\\.[0-9]+)?[KMGTP]?B$"
+                                    },
+                                    "minFreeSpace": {
+                                        "type": "string",
+                                        "pattern": "^[0-9]+(\\.[0-9]+)?[KMGTP]?B$"
+                                    },
+                                    "all": {
+                                        "type": "boolean"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "cgroup-parent": {
+            "type": "string",
+            "description": "为所有容器设置父cgroup"
+        },
+        "containerd": {
+            "type": "string",
+            "description": "containerd grpc地址",
+            "default": "/run/containerd/containerd.sock"
+        },
+        "containerd-namespace": {
+            "type": "string",
+            "description": "要使用的Containerd命名空间",
+            "default": "docker"
+        },
+        "containerd-plugins-namespace": {
+            "type": "string",
+            "description": "插件使用的Containerd命名空间",
+            "default": "docker-plugins"
+        },
+        "data-root": {
+            "type": "string",
+            "description": "持久化Docker状态的根目录",
+            "default": "/var/lib/docker"
+        },
+        "debug": {
+            "type": "boolean",
+            "description": "启用调试模式",
+            "default": false
+        },
+        "default-address-pools": {
+            "type": "array",
+            "description": "节点特定本地网络的默认地址池",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "base": {
+                        "type": "string",
+                        "pattern": "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\/([0-9]|[1-2][0-9]|3[0-2]))?$"
+                    },
+                    "size": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 32
+                    }
+                },
+                "required": [
+                    "base",
+                    "size"
+                ]
+            }
+        },
+        "default-cgroupns-mode": {
+            "type": "string",
+            "description": "容器cgroup命名空间的默认模式",
+            "enum": [
+                "host",
+                "private"
+            ],
+            "default": "private"
+        },
+        "default-gateway": {
+            "type": "string",
+            "description": "默认网桥网络的默认网关IPv4地址"
+        },
+        "default-gateway-v6": {
+            "type": "string",
+            "description": "默认网桥网络的默认网关IPv6地址"
+        },
+        "default-network-opts": {
+            "type": "object",
+            "description": "默认网络选项",
+            "additionalProperties": {
+                "type": "object",
+                "additionalProperties": {
+                    "type": "string"
+                }
+            }
+        },
+        "default-runtime": {
+            "type": "string",
+            "description": "容器的默认OCI运行时",
+            "default": "runc"
+        },
+        "default-shm-size": {
+            "type": "string",
+            "description": "容器的默认共享内存大小",
+            "pattern": "^[0-9]+(\\.[0-9]+)?[KMGTP]?i?B$",
+            "default": "64MiB"
+        },
+        "default-ulimits": {
+            "type": "object",
+            "description": "容器的默认ulimits",
+            "additionalProperties": {
+                "type": "object",
+                "properties": {
+                    "Hard": {
+                        "type": "integer"
+                    },
+                    "Name": {
+                        "type": "string"
+                    },
+                    "Soft": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "dns": {
+            "type": "array",
+            "description": "要使用的DNS服务器",
+            "items": {
+                "type": "string"
+            }
+        },
+        "dns-opts": {
+            "type": "array",
+            "description": "要使用的DNS选项",
+            "items": {
+                "type": "string"
+            }
+        },
+        "dns-search": {
+            "type": "array",
+            "description": "DNS搜索域",
+            "items": {
+                "type": "string"
+            }
+        },
+        "exec-opts": {
+            "type": "array",
+            "description": "运行时执行选项",
+            "items": {
+                "type": "string"
+            }
+        },
+        "exec-root": {
+            "type": "string",
+            "description": "执行状态文件的根目录",
+            "default": "/var/run/docker"
+        },
+        "experimental": {
+            "type": "boolean",
+            "description": "启用实验性功能",
+            "default": false
+        },
+        "features": {
+            "type": "object",
+            "description": "在守护进程中启用的功能",
+            "properties": {
+                "cdi": {
+                    "type": "boolean",
+                    "description": "启用CDI设备支持",
+                    "default": true
+                },
+                "containerd-snapshotter": {
+                    "type": "boolean",
+                    "description": "使用containerd快照器代替经典存储驱动"
+                },
+                "windows-dns-proxy": {
+                    "type": "boolean",
+                    "description": "Windows DNS代理功能"
+                }
+            },
+            "additionalProperties": {
+                "type": "boolean"
+            }
+        },
+        "firewall-backend": {
+            "type": "string",
+            "description": "要使用的防火墙后端",
+            "enum": [
+                "iptables",
+                "nftables",
+                ""
+            ]
+        },
+        "fixed-cidr": {
+            "type": "string",
+            "description": "默认网桥网络的IPv4子网"
+        },
+        "fixed-cidr-v6": {
+            "type": "string",
+            "description": "默认网桥网络的IPv6子网"
+        },
+        "group": {
+            "type": "string",
+            "description": "Unix套接字的组",
+            "default": "docker"
+        },
+        "host-gateway-ip": {
+            "type": [
+                "string",
+                "array"
+            ],
+            "description": "host-gateway字符串解析的IP地址",
+            "items": {
+                "type": "string"
+            }
+        },
+        "hosts": {
+            "type": "array",
+            "description": "要连接的守护进程套接字",
+            "items": {
+                "type": "string"
+            }
+        },
+        "proxies": {
+            "type": "object",
+            "description": "代理服务器配置",
+            "properties": {
+                "http-proxy": {
+                    "type": "string",
+                    "format": "uri"
+                },
+                "https-proxy": {
+                    "type": "string",
+                    "format": "uri"
+                },
+                "no-proxy": {
+                    "type": "string"
+                }
+            }
+        },
+        "icc": {
+            "type": "boolean",
+            "description": "启用默认网桥网络的容器间通信",
+            "default": true
+        },
+        "init": {
+            "type": "boolean",
+            "description": "在容器中运行init以转发信号和收割进程",
+            "default": false
+        },
+        "init-path": {
+            "type": "string",
+            "description": "docker-init二进制文件的路径",
+            "default": "/usr/libexec/docker-init"
+        },
+        "insecure-registries": {
+            "type": "array",
+            "description": "启用不安全的注册表通信",
+            "items": {
+                "type": "string"
+            }
+        },
+        "ip": {
+            "type": "string",
+            "description": "默认网桥网络端口发布的主机IP",
+            "default": "0.0.0.0"
+        },
+        "ip-forward": {
+            "type": "boolean",
+            "description": "在系统配置中启用IP转发",
+            "default": true
+        },
+        "ip-masq": {
+            "type": "boolean",
+            "description": "为默认网桥网络启用IP伪装",
+            "default": true
+        },
+        "iptables": {
+            "type": "boolean",
+            "description": "启用iptables规则添加",
+            "default": true
+        },
+        "ip6tables": {
+            "type": "boolean",
+            "description": "启用ip6tables规则添加",
+            "default": true
+        },
+        "ipv6": {
+            "type": "boolean",
+            "description": "为默认网桥网络启用IPv6网络",
+            "default": false
+        },
+        "labels": {
+            "type": "array",
+            "description": "为守护进程设置key=value标签",
+            "items": {
+                "type": "string",
+                "pattern": "^[^=]+=[^=]+$"
+            }
+        },
+        "live-restore": {
+            "type": "boolean",
+            "description": "当容器仍在运行时启用Docker的实时恢复",
+            "default": false
+        },
+        "log-driver": {
+            "type": "string",
+            "description": "容器日志的默认驱动",
+            "default": "json-file"
+        },
+        "log-format": {
+            "type": "string",
+            "description": "设置日志格式",
+            "enum": [
+                "text",
+                "json"
+            ],
+            "default": "text"
+        },
+        "log-level": {
+            "type": "string",
+            "description": "设置日志级别",
+            "enum": [
+                "debug",
+                "info",
+                "warn",
+                "error",
+                "fatal",
+                ""
+            ],
+            "default": "info"
+        },
+        "log-opts": {
+            "type": "object",
+            "description": "容器的默认日志驱动选项",
+            "additionalProperties": {
+                "type": "string"
+            }
+        },
+        "max-concurrent-downloads": {
+            "type": "integer",
+            "description": "设置最大并发下载数",
+            "minimum": 1,
+            "default": 3
+        },
+        "max-concurrent-uploads": {
+            "type": "integer",
+            "description": "设置最大并发上传数",
+            "minimum": 1,
+            "default": 5
+        },
+        "max-download-attempts": {
+            "type": "integer",
+            "description": "设置每次拉取的最大下载尝试次数",
+            "minimum": 1,
+            "default": 5
+        },
+        "metrics-addr": {
+            "type": "string",
+            "description": "设置提供metrics API的默认地址和端口"
+        },
+        "mtu": {
+            "type": "integer",
+            "description": "设置默认\"bridge\"网络的MTU",
+            "minimum": 68,
+            "default": 1500
+        },
+        "network-control-plane-mtu": {
+            "type": "integer",
+            "description": "网络控制平面MTU",
+            "minimum": 68,
+            "default": 1500
+        },
+        "no-new-privileges": {
+            "type": "boolean",
+            "description": "为新容器默认设置no-new-privileges",
+            "default": false
+        },
+        "no-proxy": {
+            "type": "string",
+            "description": "跳过代理的主机或IP地址的逗号分隔列表"
+        },
+        "node-generic-resources": {
+            "type": "array",
+            "description": "播发用户定义的资源",
+            "items": {
+                "type": "string",
+                "pattern": "^[^=]+=.+$"
+            }
+        },
+        "pidfile": {
+            "type": "string",
+            "description": "守护进程PID文件使用的路径",
+            "default": "/var/run/docker.pid"
+        },
+        "raw-logs": {
+            "type": "boolean",
+            "description": "不带ANSI着色的完整时间戳",
+            "default": false
+        },
+        "registry-mirrors": {
+            "type": "array",
+            "description": "首选的注册表镜像",
+            "items": {
+                "type": "string"
+            }
+        },
+        "rootless": {
+            "type": "boolean",
+            "description": "启用无根模式；通常与RootlessKit一起使用",
+            "default": false
+        },
+        "runtimes": {
+            "type": "object",
+            "description": "可用的OCI运行时配置",
+            "additionalProperties": {
+                "type": "object",
+                "oneOf": [
+                    {
+                        "type": "object",
+                        "properties": {
+                            "runtimeType": {
+                                "type": "string",
+                                "description": "containerd shim的名称或路径"
+                            },
+                            "options": {
+                                "type": "object",
+                                "description": "运行时配置选项"
+                            }
+                        },
+                        "required": [
+                            "runtimeType"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "path": {
+                                "type": "string",
+                                "description": "运行时二进制文件的路径"
+                            },
+                            "runtimeArgs": {
+                                "type": "array",
+                                "description": "传递给运行时的额外参数",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "required": [
+                            "path"
+                        ]
+                    }
+                ]
+            }
+        },
+        "seccomp-profile": {
+            "type": "string",
+            "description": "seccomp配置文件的路径。设置为\"unconfined\"以禁用默认seccomp配置文件",
+            "default": "builtin"
+        },
+        "selinux-enabled": {
+            "type": "boolean",
+            "description": "启用selinux支持",
+            "default": false
+        },
+        "shutdown-timeout": {
+            "type": "integer",
+            "description": "设置默认关闭超时时间（秒）",
+            "minimum": 1,
+            "default": 15
+        },
+        "storage-driver": {
+            "type": "string",
+            "description": "要使用的存储驱动"
+        },
+        "storage-opts": {
+            "type": "array",
+            "description": "存储驱动选项",
+            "items": {
+                "type": "string"
+            }
+        },
+        "swarm-default-advertise-addr": {
+            "type": "string",
+            "description": "设置群集播发地址的默认地址或接口"
+        },
+        "tls": {
+            "type": "boolean",
+            "description": "使用TLS"
+        },
+        "tlscacert": {
+            "type": "string",
+            "description": "仅信任由此CA签名的证书",
+            "default": "~/.docker/ca.pem"
+        },
+        "tlscert": {
+            "type": "string",
+            "description": "TLS证书文件的路径",
+            "default": "~/.docker/cert.pem"
+        },
+        "tlskey": {
+            "type": "string",
+            "description": "TLS密钥文件的路径",
+            "default": "~/.docker/key.pem"
+        },
+        "tlsverify": {
+            "type": "boolean",
+            "description": "使用TLS并验证远程"
+        },
+        "userland-proxy": {
+            "type": "boolean",
+            "description": "为回环流量使用用户空间代理",
+            "default": true
+        },
+        "userland-proxy-path": {
+            "type": "string",
+            "description": "用户空间代理二进制文件的路径",
+            "default": "/usr/libexec/docker-proxy"
+        },
+        "userns-remap": {
+            "type": "string",
+            "description": "用户命名空间的用户/组设置"
+        }
+    },
+    "additionalProperties": false
+}
