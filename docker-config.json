@@ -82,6 +82,7 @@
                 "wincred",
                 "pass",
                 "file",
+                "desktop.exe",
                 "desktop"
             ],
             "default": "desktop"
