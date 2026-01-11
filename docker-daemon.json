@@ -296,16 +296,22 @@
             "type": "object",
             "description": "代理服务器配置",
             "properties": {
-                "http-proxy": {
-                    "type": "string",
-                    "format": "uri"
-                },
-                "https-proxy": {
-                    "type": "string",
-                    "format": "uri"
-                },
-                "no-proxy": {
-                    "type": "string"
+                "default": {
+                    "type": "object",
+                    "default": "代理配置",
+                    "properties": {
+                        "http-proxy": {
+                            "type": "string",
+                            "format": "uri"
+                        },
+                        "https-proxy": {
+                            "type": "string",
+                            "format": "uri"
+                        },
+                        "no-proxy": {
+                            "type": "string"
+                        }
+                    }
                 }
             }
         },
