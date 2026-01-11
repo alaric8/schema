@@ -1,0 +1,244 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://schemas.docker.com/config/v1.json",
+    "title": "Docker CLI Configuration Schema",
+    "description": "Schema for Docker CLI configuration file (~/.docker/config.json)",
+    "type": "object",
+    "definitions": {
+        "authObject": {
+            "type": "object",
+            "description": "Registry authentication information",
+            "oneOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "auth": {
+                            "type": "string",
+                            "description": "Base64-encoded username:password",
+                            "pattern": "^[A-Za-z0-9+/]+=*$"
+                        }
+                    },
+                    "required": [
+                        "auth"
+                    ],
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "username": {
+                            "type": "string",
+                            "description": "Username"
+                        },
+                        "password": {
+                            "type": "string",
+                            "description": "Password",
+                            "writeOnly": true
+                        }
+                    },
+                    "required": [
+                        "username",
+                        "password"
+                    ],
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "identitytoken": {
+                            "type": "string",
+                            "description": "Identity token for OAuth2"
+                        }
+                    },
+                    "required": [
+                        "identitytoken"
+                    ],
+                    "additionalProperties": false
+                }
+            ]
+        },
+        "proxyObject": {
+            "type": "object",
+            "properties": {
+                "httpProxy": {
+                    "type": "string",
+                    "format": "uri"
+                },
+                "httpsProxy": {
+                    "type": "string",
+                    "format": "uri"
+                },
+                "noProxy": {
+                    "type": "string"
+                },
+                "ftpProxy": {
+                    "type": "string",
+                    "format": "uri"
+                }
+            },
+            "additionalProperties": false
+        },
+        "builderGC": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "default": true
+                },
+                "defaultKeepStorage": {
+                    "type": "string",
+                    "pattern": "^[0-9]+(\\.[0-9]+)?[KMGTP]?B$"
+                },
+                "policy": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "keepStorage": {
+                                "type": "string",
+                                "pattern": "^[0-9]+(\\.[0-9]+)?[KMGTP]?B$"
+                            },
+                            "filter": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "all": {
+                                "type": "boolean"
+                            },
+                            "keepDuration": {
+                                "type": "string",
+                                "pattern": "^[0-9]+[hmsd]$"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "properties": {
+        "auths": {
+            "type": "object",
+            "description": "Registry authentication configurations",
+            "additionalProperties": {
+                "$ref": "#/definitions/authObject"
+            }
+        },
+        "credsStore": {
+            "type": "string",
+            "description": "Credentials store to use",
+            "enum": [
+                "osxkeychain",
+                "secretservice",
+                "wincred",
+                "pass",
+                "file"
+            ],
+            "default": "osxkeychain"
+        },
+        "credHelpers": {
+            "type": "object",
+            "description": "Credential helpers for specific registries",
+            "additionalProperties": {
+                "type": "string"
+            }
+        },
+        "currentContext": {
+            "type": "string",
+            "description": "Current Docker context"
+        },
+        "detachKeys": {
+            "type": "string",
+            "description": "Keys sequence to detach from a container",
+            "pattern": "^[a-z,\\-]+$",
+            "default": "ctrl-p,ctrl-q"
+        },
+        "proxies": {
+            "$ref": "#/definitions/proxyObject"
+        },
+        "plugins": {
+            "type": "object",
+            "description": "CLI plugin configurations",
+            "additionalProperties": {
+                "type": "object"
+            }
+        },
+        "cliPluginsExtraDirs": {
+            "type": "array",
+            "description": "Additional directories to search for CLI plugins",
+            "items": {
+                "type": "string"
+            }
+        },
+        "stackOrchestrator": {
+            "type": "string",
+            "description": "Stack orchestrator to use",
+            "enum": [
+                "swarm",
+                "kubernetes",
+                "all"
+            ],
+            "default": "swarm"
+        },
+        "aliases": {
+            "type": "object",
+            "description": "Command aliases",
+            "additionalProperties": {
+                "type": "string"
+            }
+        },
+        "features": {
+            "type": "object",
+            "description": "Feature flags",
+            "additionalProperties": {
+                "type": "boolean"
+            }
+        },
+        "httpHeaders": {
+            "type": "object",
+            "description": "Additional HTTP headers to send to registries",
+            "additionalProperties": {
+                "type": "string"
+            }
+        },
+        "psFormat": {
+            "type": "string",
+            "description": "Default format for docker ps command"
+        },
+        "imagesFormat": {
+            "type": "string",
+            "description": "Default format for docker images command"
+        },
+        "builder": {
+            "type": "object",
+            "properties": {
+                "gc": {
+                    "$ref": "#/definitions/builderGC"
+                }
+            }
+        },
+        "experimental": {
+            "type": "string",
+            "description": "Experimental features",
+            "enum": [
+                "enabled",
+                "disabled"
+            ],
+            "default": "disabled"
+        }
+    },
+    "additionalProperties": true,
+    "examples": [
+        {
+            "auths": {
+                "https://index.docker.io/v1/": {
+                    "auth": "dXNlcm5hbWU6cGFzc3dvcmQ="
+                }
+            },
+            "credsStore": "osxkeychain",
+            "currentContext": "default",
+            "detachKeys": "ctrl-p,ctrl-q"
+        }
+    ]
+}
