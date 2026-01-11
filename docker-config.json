@@ -1,175 +1,190 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://schemas.docker.com/config/v1.json",
-    "title": "Docker CLI Configuration Schema",
-    "description": "Schema for Docker CLI configuration file (~/.docker/config.json)",
+    "$id": "https://raw.githubusercontent.com/alaric8/schema/main/docker-config.json",
+    "title": "Docker CLI Configuration",
+    "description": "Docker CLI configuration file schema",
     "type": "object",
-    "definitions": {
-        "authObject": {
-            "type": "object",
-            "description": "Registry authentication information",
-            "oneOf": [
-                {
-                    "type": "object",
-                    "properties": {
-                        "auth": {
-                            "type": "string",
-                            "description": "Base64-encoded username:password",
-                            "pattern": "^[A-Za-z0-9+/]+=*$"
-                        }
-                    },
-                    "required": [
-                        "auth"
-                    ],
-                    "additionalProperties": false
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "username": {
-                            "type": "string",
-                            "description": "Username"
-                        },
-                        "password": {
-                            "type": "string",
-                            "description": "Password",
-                            "writeOnly": true
-                        }
-                    },
-                    "required": [
-                        "username",
-                        "password"
-                    ],
-                    "additionalProperties": false
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "identitytoken": {
-                            "type": "string",
-                            "description": "Identity token for OAuth2"
-                        }
-                    },
-                    "required": [
-                        "identitytoken"
-                    ],
-                    "additionalProperties": false
-                }
-            ]
-        },
-        "proxyObject": {
-            "type": "object",
-            "properties": {
-                "httpProxy": {
-                    "type": "string",
-                    "format": "uri"
-                },
-                "httpsProxy": {
-                    "type": "string",
-                    "format": "uri"
-                },
-                "noProxy": {
-                    "type": "string"
-                },
-                "ftpProxy": {
-                    "type": "string",
-                    "format": "uri"
-                }
-            },
-            "additionalProperties": false
-        },
-        "builderGC": {
-            "type": "object",
-            "properties": {
-                "enabled": {
-                    "type": "boolean",
-                    "default": true
-                },
-                "defaultKeepStorage": {
-                    "type": "string",
-                    "pattern": "^[0-9]+(\\.[0-9]+)?[KMGTP]?B$"
-                },
-                "policy": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "keepStorage": {
-                                "type": "string",
-                                "pattern": "^[0-9]+(\\.[0-9]+)?[KMGTP]?B$"
-                            },
-                            "filter": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                }
-                            },
-                            "all": {
-                                "type": "boolean"
-                            },
-                            "keepDuration": {
-                                "type": "string",
-                                "pattern": "^[0-9]+[hmsd]$"
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    },
     "properties": {
         "auths": {
             "type": "object",
             "description": "Registry authentication configurations",
             "additionalProperties": {
-                "$ref": "#/definitions/authObject"
-            }
+                "type": "object",
+                "oneOf": [
+                    {
+                        "type": "object",
+                        "properties": {
+                            "auth": {
+                                "type": "string",
+                                "description": "Base64-encoded username:password",
+                                "pattern": "^[A-Za-z0-9+/]+=*$"
+                            }
+                        },
+                        "required": [
+                            "auth"
+                        ],
+                        "additionalProperties": false
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "username": {
+                                "type": "string",
+                                "description": "Username"
+                            },
+                            "password": {
+                                "type": "string",
+                                "description": "Password"
+                            }
+                        },
+                        "required": [
+                            "username",
+                            "password"
+                        ],
+                        "additionalProperties": false
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "identitytoken": {
+                                "type": "string",
+                                "description": "Identity token for OAuth2 authentication"
+                            }
+                        },
+                        "required": [
+                            "identitytoken"
+                        ],
+                        "additionalProperties": false
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "registrytoken": {
+                                "type": "string",
+                                "description": "Registry-specific token"
+                            }
+                        },
+                        "required": [
+                            "registrytoken"
+                        ],
+                        "additionalProperties": false
+                    }
+                ]
+            },
+            "default": {}
         },
         "credsStore": {
             "type": "string",
-            "description": "Credentials store to use",
+            "description": "Credential store to use",
             "enum": [
                 "osxkeychain",
                 "secretservice",
                 "wincred",
                 "pass",
-                "file"
+                "file",
+                "desktop"
             ],
-            "default": "osxkeychain"
+            "default": "desktop"
         },
         "credHelpers": {
             "type": "object",
             "description": "Credential helpers for specific registries",
             "additionalProperties": {
-                "type": "string"
-            }
+                "type": "string",
+                "enum": [
+                    "osxkeychain",
+                    "secretservice",
+                    "wincred",
+                    "pass",
+                    "ecr-login",
+                    "gcloud",
+                    "azure"
+                ]
+            },
+            "default": {}
         },
         "currentContext": {
             "type": "string",
-            "description": "Current Docker context"
+            "description": "Current Docker context",
+            "examples": [
+                "default",
+                "desktop-linux",
+                "docker-desktop",
+                "remote-host"
+            ]
         },
         "detachKeys": {
             "type": "string",
-            "description": "Keys sequence to detach from a container",
+            "description": "Key sequence to detach from a container",
             "pattern": "^[a-z,\\-]+$",
-            "default": "ctrl-p,ctrl-q"
+            "default": "ctrl-p,ctrl-q",
+            "examples": [
+                "ctrl-p,ctrl-q",
+                "ctrl-\\\\",
+                "ctrl-a,d"
+            ]
         },
         "proxies": {
-            "$ref": "#/definitions/proxyObject"
+            "type": "object",
+            "description": "HTTP/HTTPS proxy configuration",
+            "properties": {
+                "httpProxy": {
+                    "type": "string",
+                    "description": "HTTP proxy URL",
+                    "format": "uri",
+                    "examples": [
+                        "http://proxy.example.com:8080"
+                    ]
+                },
+                "httpsProxy": {
+                    "type": "string",
+                    "description": "HTTPS proxy URL",
+                    "format": "uri",
+                    "examples": [
+                        "https://proxy.example.com:8443"
+                    ]
+                },
+                "noProxy": {
+                    "type": "string",
+                    "description": "Comma-separated list of hosts to exclude from proxy",
+                    "examples": [
+                        "localhost,127.0.0.1,.example.com"
+                    ]
+                },
+                "ftpProxy": {
+                    "type": "string",
+                    "description": "FTP proxy URL",
+                    "format": "uri"
+                },
+                "allProxy": {
+                    "type": "string",
+                    "description": "Proxy URL for all protocols",
+                    "format": "uri"
+                }
+            },
+            "additionalProperties": false
         },
         "plugins": {
             "type": "object",
             "description": "CLI plugin configurations",
             "additionalProperties": {
                 "type": "object"
-            }
+            },
+            "default": {}
         },
         "cliPluginsExtraDirs": {
             "type": "array",
             "description": "Additional directories to search for CLI plugins",
             "items": {
                 "type": "string"
-            }
+            },
+            "examples": [
+                [
+                    "/usr/local/lib/docker/cli-plugins",
+                    "/opt/docker/plugins"
+                ]
+            ],
+            "default": []
         },
         "stackOrchestrator": {
             "type": "string",
@@ -186,59 +201,236 @@
             "description": "Command aliases",
             "additionalProperties": {
                 "type": "string"
-            }
+            },
+            "default": {}
         },
         "features": {
             "type": "object",
             "description": "Feature flags",
             "additionalProperties": {
                 "type": "boolean"
-            }
+            },
+            "default": {}
         },
         "httpHeaders": {
             "type": "object",
             "description": "Additional HTTP headers to send to registries",
             "additionalProperties": {
                 "type": "string"
-            }
+            },
+            "default": {}
         },
         "psFormat": {
             "type": "string",
-            "description": "Default format for docker ps command"
+            "description": "Default format for docker ps command",
+            "examples": [
+                "table {{.ID}}\\t{{.Image}}\\t{{.Command}}\\t{{.RunningFor}}",
+                "table {{.Names}}\\t{{.Status}}\\t{{.Ports}}"
+            ]
         },
         "imagesFormat": {
             "type": "string",
-            "description": "Default format for docker images command"
+            "description": "Default format for docker images command",
+            "examples": [
+                "table {{.Repository}}\\t{{.Tag}}\\t{{.Size}}"
+            ]
+        },
+        "servicesFormat": {
+            "type": "string",
+            "description": "Default format for docker service ls command"
+        },
+        "statsFormat": {
+            "type": "string",
+            "description": "Default format for docker stats command"
+        },
+        "networksFormat": {
+            "type": "string",
+            "description": "Default format for docker network ls command"
+        },
+        "secretFormat": {
+            "type": "string",
+            "description": "Default format for docker secret ls command"
+        },
+        "configFormat": {
+            "type": "string",
+            "description": "Default format for docker config ls command"
+        },
+        "nodesFormat": {
+            "type": "string",
+            "description": "Default format for docker node ls command"
+        },
+        "tasksFormat": {
+            "type": "string",
+            "description": "Default format for docker service ps command"
+        },
+        "pruneFilters": {
+            "type": "array",
+            "description": "Default filters for docker system prune",
+            "items": {
+                "type": "string"
+            },
+            "examples": [
+                [
+                    "until=24h",
+                    "label!=maintained",
+                    "label=temp"
+                ]
+            ],
+            "default": []
         },
         "builder": {
             "type": "object",
+            "description": "Builder configuration",
             "properties": {
                 "gc": {
-                    "$ref": "#/definitions/builderGC"
+                    "type": "object",
+                    "description": "Garbage collection configuration",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "default": true
+                        },
+                        "defaultKeepStorage": {
+                            "type": "string",
+                            "description": "Default amount of disk space to keep for cache",
+                            "pattern": "^[0-9]+(\\.[0-9]+)?[KMGTP]?B$",
+                            "examples": [
+                                "10GB",
+                                "20GB"
+                            ]
+                        },
+                        "policy": {
+                            "type": "array",
+                            "description": "Garbage collection policies",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "keepStorage": {
+                                        "type": "string",
+                                        "pattern": "^[0-9]+(\\.[0-9]+)?[KMGTP]?B$"
+                                    },
+                                    "filter": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "all": {
+                                        "type": "boolean"
+                                    },
+                                    "keepDuration": {
+                                        "type": "string",
+                                        "pattern": "^[0-9]+[hmsd]$",
+                                        "examples": [
+                                            "24h",
+                                            "168h",
+                                            "30d"
+                                        ]
+                                    }
+                                },
+                                "additionalProperties": false
+                            },
+                            "default": []
+                        }
+                    },
+                    "additionalProperties": false,
+                    "default": {}
                 }
-            }
+            },
+            "additionalProperties": false,
+            "default": {}
         },
         "experimental": {
             "type": "string",
-            "description": "Experimental features",
+            "description": "Enable experimental features",
             "enum": [
                 "enabled",
                 "disabled"
             ],
             "default": "disabled"
+        },
+        "registryConfigs": {
+            "type": "object",
+            "description": "Registry-specific configurations",
+            "additionalProperties": {
+                "type": "object",
+                "properties": {
+                    "mirrors": {
+                        "type": "array",
+                        "description": "Registry mirror URLs",
+                        "items": {
+                            "type": "string",
+                            "format": "uri"
+                        },
+                        "default": []
+                    },
+                    "insecure": {
+                        "type": "boolean",
+                        "description": "Allow insecure connections to this registry",
+                        "default": false
+                    },
+                    "tls": {
+                        "type": "object",
+                        "description": "TLS configuration for this registry",
+                        "properties": {
+                            "ca": {
+                                "type": "string",
+                                "description": "Path to CA certificate file"
+                            },
+                            "cert": {
+                                "type": "string",
+                                "description": "Path to client certificate file"
+                            },
+                            "key": {
+                                "type": "string",
+                                "description": "Path to client key file"
+                            },
+                            "verify": {
+                                "type": "boolean",
+                                "description": "Verify TLS certificate",
+                                "default": true
+                            }
+                        },
+                        "additionalProperties": false,
+                        "default": {}
+                    }
+                },
+                "additionalProperties": false,
+                "default": {}
+            },
+            "default": {}
+        },
+        "configs": {
+            "type": "object",
+            "description": "General configuration settings",
+            "additionalProperties": {
+                "type": "object"
+            },
+            "default": {}
         }
     },
-    "additionalProperties": true,
+    "additionalProperties": false,
     "examples": [
+        {
+            "credsStore": "desktop",
+            "currentContext": "desktop-linux"
+        },
         {
             "auths": {
                 "https://index.docker.io/v1/": {
                     "auth": "dXNlcm5hbWU6cGFzc3dvcmQ="
+                },
+                "ghcr.io": {
+                    "username": "github-user",
+                    "password": "ghp_your_token"
                 }
             },
-            "credsStore": "osxkeychain",
+            "credsStore": "desktop",
             "currentContext": "default",
-            "detachKeys": "ctrl-p,ctrl-q"
+            "experimental": "enabled",
+            "features": {
+                "buildkit": true
+            }
         }
     ]
 }
